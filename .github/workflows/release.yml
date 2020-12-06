@@ -16,7 +16,7 @@ jobs:
         uses: brandedoutcast/publish-nuget@v2.5.5
         with:
           # Filepath of the project to be packaged, relative to root of repository
-          PROJECT_FILE_PATH: AzureFunctions.OpenAPIGenerator/src/Codecagon.Tools.AzureFunctions.OpenAPIGenerator/Codecagon.Tools.AzureFunctions.OpenAPIGenerator.csproj
+          PROJECT_FILE_PATH: src/Codecagon.Tools.AzureFunctions.OpenAPIGenerator/Codecagon.Tools.AzureFunctions.OpenAPIGenerator.csproj
           # NuGet package id, used for version detection & defaults to project name
           PACKAGE_NAME: Codecagon.Tools.AzureFunctions.OpenAPIGenerator
           # Useful with external providers like Nerdbank.GitVersioning, ignores VERSION_FILE_PATH & VERSION_REGEX
