@@ -23,3 +23,4 @@ jobs:
           VERSION_STATIC: $(echo $GITHUB_REF | cut -d / -f 3)
           # Flag to toggle git tagging, enabled by default
           TAG_COMMIT: false
+          NUGET_KEY: ${{ secrets.NUGET_SECRET }}
