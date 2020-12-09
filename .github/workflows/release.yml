@@ -12,7 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         
-      - uses: bhowell2/github-substring-action
+      - name: Prepare version 
+        uses: bhowell2/github-substring-action
         id: ver
         with:
           value: ${{ github.ref }}
