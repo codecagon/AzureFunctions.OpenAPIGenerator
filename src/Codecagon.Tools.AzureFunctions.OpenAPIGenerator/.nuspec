@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+    <metadata>
+        <id>Codecagon.Tools.AzureFunctions.OpenAPIGenerator</id>
+        <version>1.0.0.0</version>
+        <title>$title$</title>
+        <authors>Stepan Prokipchyn</authors>
+        <owners>stepan.prokipchyn</owners>
+        <licenseUrl>https://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+        <projectUrl>https://github.com/codecagon/AzureFunctions.OpenAPIGenerator/</projectUrl>
+        <description>OpenAPI generation tool for Azure Functions</description>
+<!--        <releaseNotes>First release</releaseNotes>-->
+<!--        <copyright>Copyright 2017</copyright>-->
+<!--        <tags>VIPS exe file</tags>-->
+    </metadata>
+    <files>
+        <file src=".\bin\Release\netcoreapp3.1\*.*" target="tools" />
+    </files>
+</package>
