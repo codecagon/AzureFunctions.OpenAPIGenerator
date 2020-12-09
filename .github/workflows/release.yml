@@ -20,7 +20,7 @@ jobs:
           # NuGet package id, used for version detection & defaults to project name
           PACKAGE_NAME: Codecagon.Tools.AzureFunctions.OpenAPIGenerator
           # Useful with external providers like Nerdbank.GitVersioning, ignores VERSION_FILE_PATH & VERSION_REGEX
-          VERSION_STATIC: $(echo $GITHUB_REF | cut -d / -f 3)
+          VERSION_STATIC: ${{ github.ref }}
           # Flag to toggle git tagging, enabled by default
           TAG_COMMIT: false
           NUGET_KEY: ${{ secrets.NUGET_SECRET }}
