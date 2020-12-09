@@ -2,8 +2,7 @@
 <package>
     <metadata>
         <id>Codecagon.Tools.AzureFunctions.OpenAPIGenerator</id>
-        <version>1.0.0.0</version>
-        <title>$title$</title>
+        <version>%%version%%</version>
         <authors>Stepan Prokipchyn</authors>
         <owners>stepan.prokipchyn</owners>
         <licenseUrl>https://www.apache.org/licenses/LICENSE-2.0</licenseUrl>

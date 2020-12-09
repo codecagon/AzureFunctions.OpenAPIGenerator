@@ -24,7 +24,8 @@ jobs:
         with:
           _input-file: AzureFunctions.OpenAPIGenerator/src/Codecagon.Tools.AzureFunctions.OpenAPIGenerator/.nuspec
           _output-file: AzureFunctions.OpenAPIGenerator/src/Codecagon.Tools.AzureFunctions.OpenAPIGenerator/.nuspec
-          1.0.0.0: ${{ steps.ver.outputs.substring }}
+          _format-key: '%%key%%'
+          version: ${{ steps.ver.outputs.substring }}
 
       - name: Publish NuGet
         uses: brandedoutcast/publish-nuget@v2.5.5
