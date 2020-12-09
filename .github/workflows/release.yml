@@ -23,7 +23,7 @@ jobs:
         uses: bluwy/substitute-string-action@v1
         with:
           _input-file: './AzureFunctions.OpenAPIGenerator/src/Codecagon.Tools.AzureFunctions.OpenAPIGenerator/.nuspec'
-          _output-file: './AzureFunctions.OpenAPIGenerator/src/Codecagon.Tools.AzureFunctions.OpenAPIGenerator/.nuspec'
+          _output-file: './AzureFunctions.OpenAPIGenerator/src/Codecagon.Tools.AzureFunctions.OpenAPIGenerator/.nuspec2'
           _format-key: '%%key%%'
           version: ${{ steps.ver.outputs.substring }}
 
