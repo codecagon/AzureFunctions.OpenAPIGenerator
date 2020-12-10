@@ -19,6 +19,9 @@ jobs:
           value: ${{ github.ref }}
           index_of_str: "refs/tags/v"
           
+      - name: List files
+        run: ls
+          
       - name: Update version
         uses: bluwy/substitute-string-action@v1
         with:
