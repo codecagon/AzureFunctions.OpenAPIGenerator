@@ -25,8 +25,8 @@ jobs:
       - name: Update version
         uses: bluwy/substitute-string-action@v1
         with:
-          _input-file: '/src/Codecagon.Tools.AzureFunctions.OpenAPIGenerator/.nuspec'
-          _output-file: '/src/Codecagon.Tools.AzureFunctions.OpenAPIGenerator/.nuspec'
+          _input-file: 'src/Codecagon.Tools.AzureFunctions.OpenAPIGenerator/.nuspec'
+          _output-file: 'src/Codecagon.Tools.AzureFunctions.OpenAPIGenerator/.nuspec'
           _format-key: '%%key%%'
           version: ${{ steps.ver.outputs.substring }}
 
