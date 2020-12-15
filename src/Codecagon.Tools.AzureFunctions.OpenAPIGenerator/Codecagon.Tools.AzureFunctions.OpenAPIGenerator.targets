@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <Target Name="Build OpenApi JSON" BeforeTargets="BeforeBuild">
+        <ItemGroup>
+            <LambdaProjects Include="$(SolutionDir)\**\*Lambda.csproj" />
+        </ItemGroup>
+
+        <MSBuild Projects="@(LambdaProjects)" Targets="Build"  Properties="Configuration=$(Configuration);BuildProjectReferences=true;OutputPath=$(ProjectDir)/temp" />
+        <Exec Command="$(MSBuildThisFileDirectory)../tools/Codecagon.Tools.AzureFunctions.OpenAPIGenerator $(ProjectDir)temp/" />
+        <ItemGroup>
+            <EmbeddedResource Include="$(ProjectDir)temp/swagger.json" />
+        </ItemGroup>
+        <Message Importance = "high" Text="LAMBDA PROJECTS = @(LambdaProjects)" />
+    </Target>
+    
+</Project>

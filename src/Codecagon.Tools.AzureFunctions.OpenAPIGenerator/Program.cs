@@ -43,18 +43,25 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
             documentationFiles.RemoveAt(0);
             documentationFiles.ForEach(f => docs.Root!.Add(XDocument.Load(f).Root!.Elements()));
             
-            var assembly = Assembly.LoadFrom(assemblyPath + "/Frontend.Lambda.dll");
-            var classes = assembly
+            var assemblyFiles = Directory
+                .GetFiles(assemblyPath, "*Lambda.dll") // TODO: path pattern as parameter
+                .ToList();
+            
+            var firstAssembly = Assembly.LoadFrom(assemblyFiles[0]);
+            assemblyFiles.RemoveAt(0);
+            var classes = firstAssembly
                 .GetTypes()
                 .Where(t => t.IsClass)
                 .ToList();
+            assemblyFiles.ForEach(f => classes.AddRange(Assembly.LoadFrom(f).GetTypes().Where(t => t.IsClass)));
+            
             var methodInfos = classes
                 .SelectMany(c => c.GetMethods())
                 .ToList();
             var functions = methodInfos
                 .Where(m => m.GetCustomAttributes().Any(a => a.GetType().Name == "FunctionNameAttribute"))
-                .ToList();    
-            
+                .ToList();
+
             var schemas = PopulateSchemas(CollectSchemas(functions));
 
             var result = functions
@@ -92,6 +99,13 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
                         {
                             [(OperationType)operationType!] = new OpenApiOperation
                             {
+                                Tags = new List<OpenApiTag>
+                                {
+                                    new OpenApiTag
+                                    {
+                                        Name = function.DeclaringType!.Name
+                                    }
+                                },
                                 Summary = function.Name + " - " + docs.XPathSelectElement(@$"/doc/members/member[@name = ""{functionNameForDocs}""]/summary")?.Value.Trim(),
                                 Parameters = function
                                     .GetParameters()
@@ -202,13 +216,18 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
             {
                 Info = new OpenApiInfo
                 {
-                    Version = assembly.GetName().Version?.ToString(),
+                    Version = firstAssembly.GetName().Version?.ToString(),
                     Title = "Competency API",
                 },
                 Servers = new List<OpenApiServer>
                 {
                     new OpenApiServer {Url = baseUrl}
                 },
+                Tags = functions
+                    .Select(f => f.DeclaringType?.Name)
+                    .Distinct()
+                    .Select(name => new OpenApiTag { Name = name })
+                    .ToList(),
                 Paths = openApiPaths,
                 Components = new OpenApiComponents
                 {
@@ -250,7 +269,7 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
             
          
             var outputString = document.Serialize(OpenApiSpecVersion.OpenApi3_0, OpenApiFormat.Json);
-            using var file = File.CreateText(assemblyPath + "/../../swagger.json");
+            using var file = File.CreateText(assemblyPath + "/swagger.json");
             file.Write(outputString);
             file.Close();
         }
