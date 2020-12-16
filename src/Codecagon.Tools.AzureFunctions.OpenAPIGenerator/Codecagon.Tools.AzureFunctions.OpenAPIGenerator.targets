@@ -6,6 +6,8 @@
             <LambdaProjects Include="$(SolutionDir)\**\*Lambda.csproj" />
         </ItemGroup>
 
+        <MakeDir Directories="$(ProjectDir)/temp" Condition="!Exists('$(ProjectDir)/temp')"/>
+
         <MSBuild Projects="@(LambdaProjects)" Targets="Build"  Properties="Configuration=$(Configuration);BuildProjectReferences=true;OutputPath=$(ProjectDir)/temp" />
         <Exec Command='$(MSBuildThisFileDirectory)../tools/Codecagon.Tools.AzureFunctions.OpenAPIGenerator $(ProjectDir)temp/ "$(HostMapping)"' />
         
