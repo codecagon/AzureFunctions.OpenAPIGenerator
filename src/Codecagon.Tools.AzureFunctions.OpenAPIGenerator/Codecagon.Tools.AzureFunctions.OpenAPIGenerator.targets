@@ -7,7 +7,7 @@
         </ItemGroup>
 
         <MSBuild Projects="@(LambdaProjects)" Targets="Build"  Properties="Configuration=$(Configuration);BuildProjectReferences=true;OutputPath=$(ProjectDir)/temp" />
-        <Exec Command="$(MSBuildThisFileDirectory)../tools/Codecagon.Tools.AzureFunctions.OpenAPIGenerator $(ProjectDir)temp/" />
+        <Exec Command='$(MSBuildThisFileDirectory)../tools/Codecagon.Tools.AzureFunctions.OpenAPIGenerator $(ProjectDir)temp/ "$(HostMapping)"' />
         
         <ItemGroup>
             <Swagger Include="$(MSBuildThisFileDirectory)../dist/swagger/*.*" />
@@ -21,7 +21,7 @@
                 <LogicalName>Swagger.%(Filename)%(Extension)</LogicalName>
             </EmbeddedResource>
         </ItemGroup>
-        <Message Importance = "high" Text="LAMBDA PROJECTS = @(LambdaProjects)" />
+        <Message Importance = "high" Text="LAMBDA PROJECTS = @(LambdaProjects), MAPPINGS = $(HostMapping)" />
     </Target>
     
 </Project>

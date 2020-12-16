@@ -19,7 +19,9 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
     {
         static void Main(string[] args)
         {
-            var baseUrl = "http://localhost:7071/api";
+            Console.WriteLine("Test: ");
+            Console.WriteLine(String.Join("|", args));
+            var urlMappings = args.Length > 1 ? Deserialize(args[1]) : new Dictionary<string, string> { [".*"] = "http://localhost:7071/api"};
 
             var assemblyPath = new FileInfo(args[0]).Directory!.FullName;
             var files = Directory.GetFiles(assemblyPath, "Microsoft.Azure*.dll");
@@ -99,6 +101,11 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
                         {
                             [(OperationType)operationType!] = new OpenApiOperation
                             {
+                                Servers = new List<OpenApiServer>
+                                {
+                                    new OpenApiServer { Url = urlMappings.Single(item => Regex.Match(function.DeclaringType?.FullName!, item.Key, RegexOptions.Singleline).Success).Value }
+                                },
+                                
                                 Tags = new List<OpenApiTag>
                                 {
                                     new OpenApiTag
@@ -217,12 +224,9 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
                 Info = new OpenApiInfo
                 {
                     Version = firstAssembly.GetName().Version?.ToString(),
-                    Title = "Competency API",
+                    Title = "Fancy API",
                 },
-                Servers = new List<OpenApiServer>
-                {
-                    new OpenApiServer {Url = baseUrl}
-                },
+                Servers = urlMappings.Count == 1 ? new List<OpenApiServer> { new OpenApiServer {Url = urlMappings.First().Value} } : null,
                 Tags = functions
                     .Select(f => f.DeclaringType?.Name)
                     .Distinct()
@@ -272,6 +276,15 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
             using var file = File.CreateText(assemblyPath + "/swagger.json");
             file.Write(outputString);
             file.Close();
+        }
+
+        private static Dictionary<string, string> Deserialize(string parameter)
+        {
+            return parameter
+                .Replace(" ", "")
+                .Split(";")
+                .Select(mapping => new KeyValuePair<string, string>(mapping.Split("=>")[0], mapping.Split("=>")[1]))
+                .ToDictionary(kv => kv.Key, kv => kv.Value);
         }
 
         private static string ReadInnerXml(XElement element)
