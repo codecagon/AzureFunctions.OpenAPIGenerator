@@ -14,6 +14,7 @@
     </metadata>
     <files>
         <file src=".\bin\Release\netcoreapp3.1\*.*" target="tools" />
+        <file src=".\dist\*.*" target="dist/swagger" />
         <file src=".\bin\Release\netcoreapp3.1\*.*" target="lib\netcoreapp3.1" />
         <file src=".\Codecagon.Tools.AzureFunctions.OpenAPIGenerator.targets" target="build\Codecagon.Tools.AzureFunctions.OpenAPIGenerator.targets" />
     </files>

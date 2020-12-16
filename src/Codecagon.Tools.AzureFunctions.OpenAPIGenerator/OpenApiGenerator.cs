@@ -1,33 +1,21 @@
-using System;
 using System.IO;
-using System.Linq;
+using System.Reflection;
 
 namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
 {
     public class OpenApiGenerator: IOpenApiGenerator
     {
+        
+        private readonly Assembly _assembly;
+        
+        public OpenApiGenerator(Assembly assembly)
+        {
+            _assembly = assembly;
+        }
         public string Generate()
         {
-            var assembly = AppDomain
-                .CurrentDomain
-                .GetAssemblies()
-                .Single(a =>
-                {
-                    try
-                    {
-                        return a.GetManifestResourceNames().Any(name => name.EndsWith("swagger.json"));
-                    }
-                    catch (Exception)
-                    {
-                        return false;
-                    }
-                });
-                
-            var swaggerJson = assembly
-                .GetManifestResourceNames()
-                .Single(name => name.EndsWith("swagger.json"));
+            using var stream = _assembly.GetManifestResourceStream($"Swagger.swagger.json");
 
-            using var stream = assembly.GetManifestResourceStream(swaggerJson);
             using var reader = new StreamReader(stream!);
             return reader.ReadToEnd();
         }

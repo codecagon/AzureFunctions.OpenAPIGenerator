@@ -8,8 +8,18 @@
 
         <MSBuild Projects="@(LambdaProjects)" Targets="Build"  Properties="Configuration=$(Configuration);BuildProjectReferences=true;OutputPath=$(ProjectDir)/temp" />
         <Exec Command="$(MSBuildThisFileDirectory)../tools/Codecagon.Tools.AzureFunctions.OpenAPIGenerator $(ProjectDir)temp/" />
+        
         <ItemGroup>
-            <EmbeddedResource Include="$(ProjectDir)temp/swagger.json" />
+            <Swagger Include="$(MSBuildThisFileDirectory)../dist/swagger/*.*" />
+        </ItemGroup>
+        
+        <ItemGroup>
+            <EmbeddedResource Include="$(ProjectDir)temp/swagger.json">
+                <LogicalName>Swagger.swagger.json</LogicalName>
+            </EmbeddedResource>
+            <EmbeddedResource Include="@(Swagger)">
+                <LogicalName>Swagger.%(Filename)%(Extension)</LogicalName>
+            </EmbeddedResource>
         </ItemGroup>
         <Message Importance = "high" Text="LAMBDA PROJECTS = @(LambdaProjects)" />
     </Target>
