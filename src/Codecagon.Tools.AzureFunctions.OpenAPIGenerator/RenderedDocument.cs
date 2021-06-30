@@ -8,9 +8,9 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
         
         public string MimeType { get; }
 
-        public Stream Content { get; }
+        public byte[] Content { get; }
 
-        public RenderedDocument(string fileName, string mimeType, Stream content)
+        public RenderedDocument(string fileName, string mimeType, byte[] content)
         {
             FileName = fileName;
             MimeType = mimeType;

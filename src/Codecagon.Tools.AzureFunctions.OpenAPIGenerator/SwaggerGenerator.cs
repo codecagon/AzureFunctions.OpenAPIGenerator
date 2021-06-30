@@ -1,3 +1,4 @@
+using System.IO;
 using System.Reflection;
 
 namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
@@ -15,7 +16,8 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
         public RenderedDocument Render(string fileName)
         {
             using var stream = _assembly.GetManifestResourceStream($"Swagger.{fileName}");
-            return new(fileName, MimeUtils.GetMimeType(fileName), stream);
+            using var reader = new BinaryReader(stream!);
+            return new(fileName, MimeUtils.GetMimeType(fileName), reader.ReadBytes((int)stream.Length));
         }
     }
 }
