@@ -7,11 +7,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
-using MoreLinq;
 
 namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
 {
@@ -61,7 +59,7 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
                 .SelectMany(c => c.GetMethods())
                 .ToList();
             var functions = methodInfos
-                .Where(m => m.GetCustomAttributes().Any(a => a.GetType().Name == "FunctionNameAttribute"))
+                .Where(m => m.GetCustomAttributes().Any(a => a.GetType().Name == "FunctionAttribute"))
                 .ToList();
 
             var schemas = PopulateSchemas(CollectSchemas(functions));
@@ -131,7 +129,7 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
                                     .ToList(),
                                 RequestBody = function
                                     .GetParameters()
-                                    .Where(param => param.GetCustomAttributes().Any(attribute => attribute.GetType().Name == "HttpTriggerAttribute") && param.ParameterType.Name != "HttpRequest")
+                                    .Where(param => param.GetCustomAttributes().Any(attribute => attribute.GetType().Name == "HttpTriggerAttribute") && param.ParameterType.Name != "HttpRequestData")
                                     .Select(param => new OpenApiRequestBody
                                     {
                                         Required = true,
@@ -151,7 +149,7 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
                                                 }
                                             }
                                         }
-                                    }).SingleOrDefault(p => true),
+                                    }).SingleOrDefault(_ => true),
                              
                                 Description = ReadInnerXml(docs.XPathSelectElement(@$"/doc/members/member[@name = ""{functionNameForDocs}""]/remarks")),
                                 Responses = UnwrapReturnType(function.ReturnType) == null 
@@ -311,7 +309,11 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
 
                 current = next;
 
-                next = current.Concat(newTypes).DistinctBy(t => t.FullName).ToList();
+                next = current
+                    .Concat(newTypes)
+                    .GroupBy(p => p.FullName)
+                    .Select(g => g.First())
+                    .ToList();
             }
 
             return next;
@@ -322,10 +324,11 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
             return functions
                 .SelectMany(f => f
                     .GetParameters()
-                    .Where(param => param.GetCustomAttributes().Any(attribute => attribute.GetType().Name == "HttpTriggerAttribute") && param.ParameterType.Name != "HttpRequest")
+                    .Where(param => param.GetCustomAttributes().Any(attribute => attribute.GetType().Name == "HttpTriggerAttribute") && param.ParameterType.Name != "HttpRequestData")
                     .Select(p => p.ParameterType)
                     .Concat(Enumerate(ListItem(UnwrapReturnType(f.ReturnType)))))
-                .DistinctBy(p => p.FullName)
+                .GroupBy(p => p.FullName)
+                .Select(g => g.First())
                 .ToList();
         }
 
@@ -343,16 +346,6 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
                 realType = realType.GenericTypeArguments[0];
             }
 
-            if (realType.Name.Equals(typeof(ActionResult<>).Name))
-            {
-                realType = realType.GenericTypeArguments[0];
-            }
-
-            if (returnType == typeof(ActionResult))
-            {
-                return null;
-            }
-            
             return realType;
         }
 
