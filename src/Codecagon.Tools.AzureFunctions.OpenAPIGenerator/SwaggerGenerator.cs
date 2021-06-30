@@ -1,6 +1,4 @@
-using System.IO;
 using System.Reflection;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
 {
@@ -14,15 +12,10 @@ namespace Codecagon.Tools.AzureFunctions.OpenAPIGenerator
             _assembly = assembly;
         }
         
-        public IActionResult Render(string fileName)
+        public RenderedDocument Render(string fileName)
         {
             using var stream = _assembly.GetManifestResourceStream($"Swagger.{fileName}");
-            using var reader = new StreamReader(stream!);
-            
-            return new ContentResult {
-                Content = reader.ReadToEnd(),
-                ContentType = MimeUtils.GetMimeType(fileName)
-            };
+            return new(fileName, MimeUtils.GetMimeType(fileName), stream);
         }
     }
 }
